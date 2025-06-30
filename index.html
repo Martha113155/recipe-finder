@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #ingredientInput {
+            padding: 10px;
+            width: 60%;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #searchButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #searchButton:hover {
+            background-color: #218838;
+        }
+        #recipeList {
+            display: grid;
+            gap: 20px;
+        }
+        .recipe-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        .recipe-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .recipe-details {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .recipe-details.active {
+            display: block;
+        }
+        .ingredients-list, .instructions-list {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Recipe Finder</h1>
+    <div class="search-container">
+        <input type="text" id="ingredientInput" placeholder="Enter ingredients (e.g., chicken, rice)">
+        <button id="searchButton">Search Recipes</button>
+    </div>
+    <div id="recipeList"></div>
+    <div id="recipeDetails" class="recipe-details"></div>
+
+    <script>
+        // Sample recipe data
+        const recipes = [
+            {
+                id: 1,
+                name: "Vegetarian Stir-Fry",
+                ingredients: ["tofu", "broccoli", "carrots", "soy sauce", "garlic", "ginger", "rice"],
+                instructions: [
+                    "Cook rice according to package instructions.",
+                    "Cube tofu and stir-fry in a hot pan with oil until golden.",
+                    "Add chopped broccoli and carrots, stir-fry for 5 minutes.",
+                    "Mix in minced garlic, ginger, and soy sauce; cook for 2 more minutes.",
+                    "Serve over cooked rice."
+                ],
+                prepTime: "20 minutes",
+                servings: 4
+            },
+            {
+                id: 2,
+                name: "Non-Vegetarian",
+                ingredients: ["Chicken Biryani", "Chicken kabab", "Mutton Soup", "Prawns all Items", "Apollo Fish", "Egg Rice", "Noodles"],
+                instructions: [
+                    "Marinate chicken with yogurt, turmeric, chili powder, garam masala, and salt for 1 hour.",
+                    "Soak basmati rice for 30 minutes, then partially cook and drain.",
+                    "In a large pot, heat oil and sauté sliced onions, ginger-garlic paste, and whole spices (bay leaf, cardamom, cloves).",
+                    "Add marinated chicken and cook until partially done.",
+                    "Layer the partially cooked rice over the chicken, add saffron milk and fried onions, cover, and cook on low heat for 20 minutes."
+                ],
+                prepTime: "1 hour 30 minutes",
+                servings: 4
+            }
+        ];
+
+        // DOM elements
+        const ingredientInput = document.getElementById('ingredientInput');
+        const searchButton = document.getElementById('searchButton');
+        const recipeList = document.getElementById('recipeList');
+        const recipeDetails = document.getElementById('recipeDetails');
+
+        // Search functionality
+        searchButton.addEventListener('click', () => {
+            const searchTerms = ingredientInput.value.toLowerCase().split(',').map(term => term.trim());
+            const matchingRecipes = recipes.filter(recipe => 
+                searchTerms.every(term => 
+                    recipe.ingredients.some(ingredient => ingredient.toLowerCase().includes(term))
+                )
+            );
+            displayRecipes(matchingRecipes);
+        });
+
+        // Display recipes
+        function displayRecipes(recipes) {
+            recipeList.innerHTML = '';
+            recipeDetails.innerHTML = '';
+            if (recipes.length === 0) {
+                recipeList.innerHTML = '<p>No recipes found.</p>';
+                return;
+            }
+            recipes.forEach(recipe => {
+                const recipeCard = document.createElement('div');
+                recipeCard.className = 'recipe-card';
+                recipeCard.innerHTML = `<h3>${recipe.name}</h3><p>Prep Time: ${recipe.prepTime}</p><p>Servings: ${recipe.servings}</p>`;
+                recipeCard.addEventListener('click', () => showRecipeDetails(recipe));
+                recipeList.appendChild(recipeCard);
+            });
+        }
+
+        // Show recipe details
+        function showRecipeDetails(recipe) {
+            recipeDetails.innerHTML = `
+                <h2>${recipe.name}</h2>
+                <h3>Ingredients:</h3>
+                <ul class="ingredients-list">
+                    ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                </ul>
+                <h3>Instructions:</h3>
+                <ol class="instructions-list">
+                    ${recipe.instructions.map(inst => `<li>${inst}</li>`).join('')}
+                </ol>
+                <p><strong>Prep Time:</strong> ${recipe.prepTime}</p>
+                <p><strong>Servings:</strong> ${recipe.servings}</p>
+            `;
+            recipeDetails.className = 'recipe-details active';
+        }
+    </script>
+</body>
+</html>
